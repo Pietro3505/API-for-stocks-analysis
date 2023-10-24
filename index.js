@@ -7,36 +7,13 @@ const uri = `mongodb+srv://pietro741:${password}@cluster0.pw8ukip.mongodb.net/?r
 
 
 
-
-const tickerSchema = new mongoose.Schema({
-    tickers: [String], 
-    dateFrom: {type: Date, default: Date.now},
-    dateTo: {type: Date, default: Date.now}
-})
-
-const TickerSend = mongoose.model("TickerSend", tickerSchema);
-const tickerSend = new TickerSend({   
-    tickers: [
-    "NVDA",
-    "APPL"
-    ], 
-dateFrom: "2023-10-11",
-dateTo: "2023-10-12"   
-})
+mongoose.connect(uri)
+.then( () => {console.log('connected to MongoDB')} )
+.catch(err => console.log(err));
 
 //Middleware
 app.use(express.json());
-app.use('/', results);
-
-
-async function main() {
-  await mongoose.connect(uri);
-
-}
-
-main()
-.then( () => {tickerSend.save();} )
-.catch(err => console.log(err));
+app.use('/api/', results);
 
 
 
