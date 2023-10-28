@@ -4,17 +4,17 @@ const mongoose = require('mongoose')
 const results = require('./routes/resultsRouter');
 const password = process.env.API_PASSWORD
 const uri = `mongodb+srv://pietro741:${password}@cluster0.pw8ukip.mongodb.net/?retryWrites=true&w=majority`;
-
+const {ask} = require('./logic/newsRequests');
 
 
 mongoose.connect(uri)
-.then( () => {console.log('connected to MongoDB')} )
+.then( () => {console.log('Connected to MongoDB')} )
 .catch(err => console.log(err));
 
 //Middleware
 app.use(express.json());
 app.use('/api/', results);
-
+ask()
 
 
 
