@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const {Ticker, validateTicker} = require('../models/tickerInfo');
 const {ask} = require('../logic/newsRequests');
+const {chatGPTCompletion} = require('../logic/openAi');
 
 router.get('/', async (req, res) => {
     const tickers = await Ticker.find()
@@ -19,21 +20,41 @@ router.post('/', async (req, res) => {
         dateFrom: req.body.dateFrom,
         dateTo: req.body.dateTo
     })
+
+    
+    
+    evaluations = [];
+
+
+    async function response () {
+        
+    const news = await ask(tickerRequest)
+    for (let index = 0; index < news.articles.length; index++) {
+            
+            evaluations.push(await chatGPTCompletion(news.articles[index].title));
+    
+    }
+
+            return evaluations
+    }
+    const responseSend = await response()
+    res.send(responseSend)
+
     try {
-        await tickerRequest.save();
+        //await tickerRequest.save();
     }
     catch (ex) {
-        res.status(500).send("Something Failed")
+     res.status(500).send("Something Failed")
     }
     
-    ask(tickerRequest);
-    res.send(tickerRequest);
+    
 });
+
 
 router.put('/', (req, res) => {
 
     const {error} = validateTicker(req.body);
-    if (error) return res.status(400).send(error.message);
+    if (error) return res.status(400).send(error.message);ˀ
     
 
 

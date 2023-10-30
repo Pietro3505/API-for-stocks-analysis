@@ -12,6 +12,7 @@
     "axios": "^1.5.1",
     "debug": "^4.3.4",
     "express": "^4.18.2",
+    "express-async-errors": "^3.1.1",
     "financial-news-api": "^1.0.0",
     "joi": "^17.11.0",
     "mongoose": "^7.6.2",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "jshint": "^2.13.6"
+    "jshint": "^2.13.6",
+    "supertest": "^6.3.3"
   }
 }
