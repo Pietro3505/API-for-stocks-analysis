@@ -18,7 +18,8 @@
     "mongoose": "^7.6.2",
     "openai": "^4.14.0",
     "underscore": "^1.13.6",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "winston-mongodb": "^5.1.1"
   },
   "devDependencies": {
     "jest": "^29.7.0",

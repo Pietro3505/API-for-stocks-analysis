@@ -1,19 +1,34 @@
+require('express-async-errors');
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose')
+const winston = require('winston');
+require('winston-mongodb');
+const errors = require('./middleware/errors');
 const results = require('./routes/resultsRouter');
 const password = process.env.API_PASSWORD
 const uri = `mongodb+srv://pietro741:${password}@cluster0.pw8ukip.mongodb.net/?retryWrites=true&w=majority`;
-const {chatGPTCompletion} = require('./logic/openAi');
+
+
+//Error Handling
+const logger = winston.createLogger({
+    transports: [
+      new winston.transports.Console(),
+      new winston.transports.File({filename: './loggers/logger.log'}),
+      new winston.transports.MongoDB({db: uri}),
+      new winston.transports.File({filename: './loggers/exceptions.log', handleExceptions: true}),
+      new winston.transports.File({ filename: './loggers/rejections.log' })
+    ]
+  });
 
 mongoose.connect(uri)
-.then( () => {console.log('Connected to MongoDB')} )
-.catch(err => console.log(err));
+    .then( () => {console.log('Connected to MongoDB')} )
+    .catch(err => console.log(err));
 
 //Middleware
 app.use(express.json());
 app.use('/api/', results);
-
+app.use(errors)
 
 
 
