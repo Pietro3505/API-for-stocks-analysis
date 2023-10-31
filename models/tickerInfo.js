@@ -21,6 +21,6 @@ function validateTickerInput (input) {
     return schema.validate(input);
 }
 
-
+module.exports.tickerSchema = tickerSchema;
 module.exports.validateTicker = validateTickerInput;
 module.exports.Ticker = TickerSend;
