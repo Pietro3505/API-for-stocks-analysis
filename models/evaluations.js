@@ -7,6 +7,7 @@ const evaluationSchema = new mongoose.Schema({
     evaluation: String,
     url: String,
     containsYes: Boolean,
+    symbols: [String],
     request: {type: tickerSchema}
 })
 
@@ -18,7 +19,8 @@ function validateEvaluationInput (input) {
         title: Joi.string().min(5),
         evaluation: Joi.string().min(10),
         url: Joi.string(),
-        containsYes: Joi.boolean()
+        containsYes: Joi.boolean(),
+        symbols: Joi.array().items(Joi.string())
     });
 
     return schema.validate(input);

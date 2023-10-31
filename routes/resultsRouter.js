@@ -6,6 +6,10 @@ const {Evaluation, validateEvaluation} = require('../models/evaluations');
 const {ask} = require('../logic/newsRequests');
 const {chatGPTCompletion} = require('../logic/openAi');
 
+async function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
 
 router.get('/', async (req, res) => {
     const tickers = await Ticker.find()
@@ -23,47 +27,42 @@ router.post('/', async (req, res) => {
         dateTo: req.body.dateTo
     })
 
-    
-    
-    let evaluations = [];
-    let evaluationResponse = [];
+   
+    let evaluationsCollection = [];
 
-    async function response () {
-        
-    const news = await ask(tickerRequest)
-    for (let index = 0; index < news.articles.length; index++) {
+    async function evaluateTicker () {
+        const news = await ask(tickerRequest)
+            for (let index = 0; index < news.articles.length; index++) {
             
-       const result = await chatGPTCompletion(news.articles[index].title)
-            evaluationResponse.push(new Evaluation ({
-                title: news.articles[index].title,
-                evaluation: result,
-                url: news.articles[index].sourceUrl,
-                containsYes: result.includes('YES'),
-                request: tickerRequest
-            }))
-    }
-        return evaluationResponse
-    }
+                const result = await chatGPTCompletion(news.articles[index].title)
+                    evaluationsCollection.push(new Evaluation ({
+                        title: news.articles[index].title,
+                        evaluation: result,
+                        url: news.articles[index].sourceUrl,
+                        containsYes: result.includes('YES'),
+                        symbols: news.articles[index].symbols,
+                        request: tickerRequest
+                    }))
 
-    const result = await response()
-        res.send(result)
+            if (index < news.articles.length - 1) {
+                await delay(20000);
+            }
+        }
+
+            return evaluationsCollection
+    }
+    
+    const evaluations = await evaluateTicker()
+        res.send(evaluations)
         res.end()
-    
-    try {
-        //await tickerRequest.save();
-    }
-    catch (ex) {
-     res.status(500).send("Something Failed")
-    }
-    
-    
+        
 });
 
 
 router.put('/', (req, res) => {
 
     const {error} = validateTicker(req.body);
-    if (error) return res.status(400).send(error.message);ˀ
+    if (error) return res.status(400).send(error.message);
     
 
 
