@@ -6,6 +6,7 @@ const winston = require('winston');
 require('winston-mongodb');
 const errors = require('./middleware/errors');
 const results = require('./routes/resultsRouter');
+const visualization = require('./routes/visualization');
 const password = process.env.API_PASSWORD
 const uri = `mongodb+srv://pietro741:${password}@cluster0.pw8ukip.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -21,13 +22,15 @@ const logger = winston.createLogger({
     ]
   });
 
+//DB
 mongoose.connect(uri)
     .then( () => {console.log('Connected to MongoDB')} )
     .catch(err => console.log(err));
 
 //Middleware
 app.use(express.json());
-app.use('/api/', results);
+app.use('/api/results', results);
+app.use('/api/visualize', visualization);
 app.use(errors)
 
 

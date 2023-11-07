@@ -1,14 +1,12 @@
 const mongoose = require('mongoose')
 const Joi = require('joi');
-const {tickerSchema} = require('./tickerInfo')
 
 const evaluationSchema = new mongoose.Schema({
     title: String, 
     evaluation: String,
-    url: String,
     containsYes: Boolean,
+    url: String,
     symbols: [String],
-    request: {type: tickerSchema}
 })
 
 const Evaluation = mongoose.model("Evaluation", evaluationSchema);

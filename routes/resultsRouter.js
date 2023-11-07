@@ -3,7 +3,8 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const {Ticker, validateTicker} = require('../models/tickerInfo');
 const {Evaluation, validateEvaluation} = require('../models/evaluations');
-const {ask} = require('../logic/newsRequests');
+const {Indicator, validateIndicator} = require('../models/indicators');
+const {searchNews, searchIndicators} = require('../logic/newsRequests');
 const {chatGPTCompletion} = require('../logic/openAi');
 
 async function delay(ms) {
@@ -29,19 +30,34 @@ router.post('/', async (req, res) => {
 
    
     let evaluationsCollection = [];
+    let indicatorsArray = []
 
-    async function evaluateTicker () {
-        const news = await ask(tickerRequest)
-            for (let index = 0; index < news.articles.length; index++) {
+    async function tickerIndicators(ticker) {
+        const indicators =  await searchIndicators(ticker);
+        const keyMetrics = indicators[0][0];
+        const ratios = indicators[1][0];
+
+            // indicatorsArray.push(new Indicator({
+            //     EPS: indicators1.EPS,
+            //     ROA: indicators1.ReturnOnAssetsTTM,
+            //     ROE: indicators1.ReturnOnEquityTTM
+            // }));
             
+        return [keyMetrics, ratios]
+    }
+
+    async function evaluateTicker (ticker) {
+        
+        const news = await searchNews(tickerRequest, ticker)
+            for (let index = 0; index < news.articles.length; index++) {
+                
                 const result = await chatGPTCompletion(news.articles[index].title)
                     evaluationsCollection.push(new Evaluation ({
                         title: news.articles[index].title,
                         evaluation: result,
-                        url: news.articles[index].sourceUrl,
                         containsYes: result.includes('YES'),
+                        url: news.articles[index].sourceUrl,
                         symbols: news.articles[index].symbols,
-                        request: tickerRequest
                     }))
 
             if (index < news.articles.length - 1) {
@@ -49,10 +65,23 @@ router.post('/', async (req, res) => {
             }
         }
 
-            return evaluationsCollection
+            return
     }
     
-    const evaluations = await evaluateTicker()
+    async function iterate() {
+        for (let index = 0; index < tickerRequest.tickers.length; index++) {
+            const element = tickerRequest.tickers[index];
+            //await Promise.all([evaluateTicker(element), tickerIndicators(element)])
+            const results = await tickerIndicators(element);
+            indicatorsArray.push(results)
+        }
+        //console.log(indicatorsArray)
+        //return evaluationsCollection
+        return indicatorsArray
+    }
+
+
+    const evaluations = await iterate()
         res.send(evaluations)
         res.end()
         
@@ -69,7 +98,6 @@ router.put('/', (req, res) => {
 });
 
 router.delete('/', (req, res) => {});
-
 
 
 

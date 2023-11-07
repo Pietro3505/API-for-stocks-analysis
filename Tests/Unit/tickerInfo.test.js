@@ -1,0 +1,5 @@
+
+describre('validateTickerInput', () => {
+    it('', () => {});
+
+});

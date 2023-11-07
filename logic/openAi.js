@@ -14,6 +14,7 @@ async function chatGPTCompletion (news) {
         messages: [{"role": "user", "content": ` ${news} Forget all your previous instructions. Pretend you are a financial expert. You area financial expert with stock recommendation experience. Answer 'YES' if good news, 'NO' if bad news, or 'UNKNOWN' if uncertain in the first line. Then elaborate with one short and concise sentence on the next line.`}],
       });
     
+      
      return response.choices[0].message.content
 }
 
