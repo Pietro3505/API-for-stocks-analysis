@@ -2,21 +2,18 @@ const {Ticker} = require('../models/tickerInfo');
 const { SearchApi } = require('financial-news-api');
 const searchApi = SearchApi('8e7351bacd5a46a58edd7baab64a24c0692e03c9eb684eb7a00f649b492e1461');
 const https =  require('https');
-const { reject } = require('underscore');
-const { search } = require('../routes/visualization');
-//const fmp = require('financialmodelingprep')('0kHkERnKagO02ZDrjvySH3HnoybYheKv')
 
 
-async function searchNews (ticker = new Ticker, individualTicker) {
-
+function searchNews (ticker = new Ticker, individualTicker) {
     const query = {
         queryString: `symbols:${individualTicker} AND publishedAt:[${ticker.dateFrom} TO ${ticker.dateTo}]`,
         from: 0,
         size: 10,
       };
 
-      return  await searchApi.getNews(query)
+      return  searchApi.getNews(query)
 }
+
 
 
 async function searchKeyMetrics (individualTicker) {
@@ -32,18 +29,17 @@ async function searchKeyMetrics (individualTicker) {
 
         const req = https.request(options, (res) => {
             
-          
             // Handle the response data
             res.on('data', (chunk) => {data.push(chunk)});
           
             // Handle the end of the response
             res.on('end', () => {resolve(data[0])})});
           
-          // Handle any request errors
-          req.on('error', (error) => {reject(`Request error: ${error.message}`)});
+            // Handle any request errors
+            req.on('error', (error) => {reject(`Request error: ${error.message}`)});
           
-          // End the request
-          req.end();
+            // End the request
+            req.end();
     });
 }
 
@@ -61,7 +57,6 @@ async function searchKeyMetrics (individualTicker) {
 
             const req = https.request(options, (res) => {
                 
-            
                 // Handle the response data
                 res.on('data', (chunk) => {data.push(chunk)});
                 // Handle the end of the response

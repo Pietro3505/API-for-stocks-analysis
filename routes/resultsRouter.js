@@ -37,13 +37,17 @@ router.post('/', async (req, res) => {
         const keyMetrics = indicators[0][0];
         const ratios = indicators[1][0];
 
-            // indicatorsArray.push(new Indicator({
-            //     EPS: indicators1.EPS,
-            //     ROA: indicators1.ReturnOnAssetsTTM,
-            //     ROE: indicators1.ReturnOnEquityTTM
-            // }));
-            
-        return [keyMetrics, ratios]
+            indicatorsArray.push(new Indicator({
+                EPS: ratios.priceEarningsRatio,
+                ROA: ratios.returnOnAssets,
+                ROE: ratios.returnOnEquity,
+                ROIC: ratios.returnOnCapitalEmployed,
+                OperatingMargin: ratios.operatingProfitMargin,
+                DebtToEquity: ratios.debtEquityRatio,
+                FreeCashFlowYield: keyMetrics.freeCashFlowYield
+            }));
+
+        return indicatorsArray
     }
 
     async function evaluateTicker (ticker) {
@@ -73,7 +77,6 @@ router.post('/', async (req, res) => {
             const element = tickerRequest.tickers[index];
             //await Promise.all([evaluateTicker(element), tickerIndicators(element)])
             const results = await tickerIndicators(element);
-            indicatorsArray.push(results)
         }
         //console.log(indicatorsArray)
         //return evaluationsCollection
