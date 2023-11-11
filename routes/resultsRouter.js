@@ -1,15 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require('mongoose');
-const {Ticker, validateTicker} = require('../models/tickerInfo');
-const {Evaluation, validateEvaluation} = require('../models/evaluations');
-const {Indicator, validateIndicator} = require('../models/indicators');
-const {searchNews, searchIndicators} = require('../logic/newsRequests');
-const {chatGPTCompletion} = require('../logic/openAi');
-
-async function delay(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
+const {Ticker, validateTicker} = require('../models/tickers');
+const {evaluateTicker} = require('../models/evaluations');
+const {tickerIndicator} = require('../models/indicators');
 
 
 router.get('/', async (req, res) => {
@@ -28,66 +22,25 @@ router.post('/', async (req, res) => {
         dateTo: req.body.dateTo
     })
 
-   
     let evaluationsCollection = [];
-    let indicatorsArray = []
+    let indicatorsCollection = []
 
-    async function tickerIndicators(ticker) {
-        const indicators =  await searchIndicators(ticker);
-        const keyMetrics = indicators[0][0];
-        const ratios = indicators[1][0];
-
-            indicatorsArray.push(new Indicator({
-                EPS: ratios.priceEarningsRatio,
-                ROA: ratios.returnOnAssets,
-                ROE: ratios.returnOnEquity,
-                ROIC: ratios.returnOnCapitalEmployed,
-                OperatingMargin: ratios.operatingProfitMargin,
-                DebtToEquity: ratios.debtEquityRatio,
-                FreeCashFlowYield: keyMetrics.freeCashFlowYield
-            }));
-
-        return indicatorsArray
-    }
-
-    async function evaluateTicker (ticker) {
-        
-        const news = await searchNews(tickerRequest, ticker)
-            for (let index = 0; index < news.articles.length; index++) {
-                
-                const result = await chatGPTCompletion(news.articles[index].title)
-                    evaluationsCollection.push(new Evaluation ({
-                        title: news.articles[index].title,
-                        evaluation: result,
-                        containsYes: result.includes('YES'),
-                        url: news.articles[index].sourceUrl,
-                        symbols: news.articles[index].symbols,
-                    }))
-
-            if (index < news.articles.length - 1) {
-                await delay(20000);
-            }
-        }
-
-            return
-    }
-    
     async function iterate() {
         for (let index = 0; index < tickerRequest.tickers.length; index++) {
             const element = tickerRequest.tickers[index];
-            //await Promise.all([evaluateTicker(element), tickerIndicators(element)])
-            const results = await tickerIndicators(element);
+            
+            const elementEvaluation = await evaluateTicker(tickerRequest, element)
+                evaluationsCollection.push(elementEvaluation)
+            const elementIndicators = await tickerIndicator(element);
+                indicatorsCollection.push(elementIndicators)
         }
-        //console.log(indicatorsArray)
-        //return evaluationsCollection
-        return indicatorsArray
+        return [indicatorsCollection, evaluationsCollection]
     }
 
 
     const evaluations = await iterate()
         res.send(evaluations)
         res.end()
-        
 });
 
 

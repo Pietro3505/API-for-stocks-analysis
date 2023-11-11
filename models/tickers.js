@@ -13,9 +13,9 @@ const TickerSend = mongoose.model("TickerSend", tickerSchema);
 
 function validateTickerInput (input) {
     const schema = Joi.object({
-        tickers: Joi.array().items(Joi.string()).min(1),
-        dateFrom: Joi.date().iso(),
-        dateTo: Joi.date().iso()
+        tickers: Joi.array().items(Joi.string().min(1).max(256)).min(1).required(),
+        dateFrom: Joi.date().iso().required(),
+        dateTo: Joi.date().iso().required()
     });
 
     return schema.validate(input);

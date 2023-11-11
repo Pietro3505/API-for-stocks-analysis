@@ -1,4 +1,4 @@
-const {Ticker} = require('../models/tickerInfo');
+const {Ticker} = require('../models/tickers');
 const { SearchApi } = require('financial-news-api');
 const searchApi = SearchApi('8e7351bacd5a46a58edd7baab64a24c0692e03c9eb684eb7a00f649b492e1461');
 const https =  require('https');
@@ -8,7 +8,7 @@ function searchNews (ticker = new Ticker, individualTicker) {
     const query = {
         queryString: `symbols:${individualTicker} AND publishedAt:[${ticker.dateFrom} TO ${ticker.dateTo}]`,
         from: 0,
-        size: 10,
+        size: 15,
       };
 
       return  searchApi.getNews(query)
