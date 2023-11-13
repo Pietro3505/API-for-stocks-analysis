@@ -13,7 +13,7 @@ const evaluationSchema = new mongoose.Schema({
     evaluation: String,
     url: String,
     containsYes: Boolean,
-    containsNo: Boolean,
+    containsNo: {type: Boolean, default: false},
     date: Number,
     symbol: String,
 })
@@ -50,7 +50,7 @@ async function evaluateTicker (tickerRequest, ticker) {
                         evaluation: result,
                         url: news.articles[index].sourceUrl,
                         containsYes: result.includes('YES'),
-                        containsNo: result.includes('NO'),
+                        containsNo: includesNO(result),
                         date: Date.parse(news.articles[index].publishedAt),
                         symbol: news.articles[index].symbols[0]
                     })
@@ -72,6 +72,36 @@ async function evaluateTicker (tickerRequest, ticker) {
 }
 
 
+function includesNO (result) {
+    if (result.includes('NO') && !result.includes('UNKNOWN')) {
+        return true
+    } else if (!result.includes('NO')) {
+        return false
+    }
+}
+
+function calculateGTPScore (evaluations) {
+    let containsYes = 0
+    let containsNo = 0
+    let totalCount = evaluations.length
+
+    for (let i = 0; i < evaluations.length; i++) {
+        const element = evaluations[i];
+
+        if (element.containsYes === true) {
+            containsYes ++
+        } else if (element.containsNo === true) {
+             containsNo++
+        }
+        
+    }
+    let yesScore = (containsYes*100)/totalCount;
+    let noScore = (containsNo*100)/totalCount;
+
+    return [yesScore, noScore]
+}
+
 module.exports.validateEvaluation = validateEvaluationInput;
 module.exports.Evaluation = Evaluation;
 module.exports.evaluateTicker = evaluateTicker;
+module.exports.calculateGTPScore = calculateGTPScore;

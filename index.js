@@ -7,6 +7,7 @@ require('winston-mongodb');
 const errors = require('./middleware/errors');
 const results = require('./routes/resultsRouter');
 const visualization = require('./routes/visualization');
+const calculations = require('./routes/calculations');
 const password = process.env.API_PASSWORD
 const uri = `mongodb+srv://pietro741:${password}@cluster0.pw8ukip.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -40,6 +41,7 @@ app.use(function(req, res, next) {
 
 app.use('/api/results', results);
 app.use('/api/visualize', visualization);
+app.use('/api/calculations', calculations);
 app.use(errors)
 
 

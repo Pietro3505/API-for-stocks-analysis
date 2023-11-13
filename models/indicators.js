@@ -34,6 +34,7 @@ function validateIndicatorInput (input) {
 
 
 async function tickerIndicator(ticker) {
+
     const indicators =  await searchIndicators(ticker);
     const keyMetrics = indicators[0][0];
     const ratios = indicators[1][0];
@@ -47,19 +48,21 @@ async function tickerIndicator(ticker) {
             DebtToEquity: ratios.debtEquityRatio,
             FreeCashFlowYield: keyMetrics.freeCashFlowYield
         });
-        
-        const comparationObject = await Indicator.find({symbol: ratios.symbol});
+
+        const comparationObject = await Indicator.find({symbol: ticker});
 
         if (comparationObject.length === 0) {
             try{
                 await companyIndicator.save()
+                return companyIndicator
             }catch(err){throw new Error(err)}
         } else if (comparationObject[0].EPS !== ratios.priceEarningsRatio) {
             try{
                 await Indicator.findOneAndUpdate({symbol: ratios.symbol}, companyIndicator);
+                return companyIndicator
             }catch(err){throw new Error(err)}
         }
-    return companyIndicator
+    
 }
 
 

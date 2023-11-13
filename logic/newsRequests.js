@@ -77,7 +77,6 @@ async function searchKeyMetrics (individualTicker) {
         const keyMetrics = await searchKeyMetrics(individualTicker)
         const ratios = await searchRatios(individualTicker)
 
-
         return [JSON.parse(keyMetrics), JSON.parse(ratios)]
     }
 

@@ -39,7 +39,3 @@ router.post('/indicators', async (req, res) => {
 
 
 module.exports = router;
-
-const filter = {"symbol": {"$in": ["ADBE", "AAPL"]}}
-//{$in: ['some title', 'some other title']}
-//,

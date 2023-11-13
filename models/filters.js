@@ -32,6 +32,17 @@ function validateIndicatorFilterInput (input) {
     return schema.validate(input);
 }
 
-module.exports.Filter = Filter
-module.exports.validateEvaluationFilter = validateEvaluationFilterInput
-module.exports.validateIndicatorFilter = validateIndicatorFilterInput
+function validateCalculationInput (input) {
+    const schema = Joi.object({
+        symbol: Joi.string().min(1).max(256),
+        dateFrom: Joi.date().iso().required(),
+        dateTo: Joi.date().iso().required(),
+    });
+
+    return schema.validate(input);
+}
+
+module.exports.Filter = Filter;
+module.exports.validateEvaluationFilter = validateEvaluationFilterInput;
+module.exports.validateIndicatorFilter = validateIndicatorFilterInput;
+module.exports.validateCalculation = validateCalculationInput;
