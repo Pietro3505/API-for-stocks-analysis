@@ -13,20 +13,25 @@ const filterSchema = new mongoose.Schema({
 const Filter = mongoose.model("Filter", filterSchema);
 
 
-function validateFilterInput (input) {
+function validateEvaluationFilterInput (input) {
     const schema = Joi.object({
-        conditions: {
-            tickers: Joi.array().items(Joi.string().min(1).max(256)).min(1).required(),
-            dateFrom: Joi.date().iso().required(),
-            dateTo: Joi.date().iso().required(),
-        },
-        projection: Joi.array().items(Joi.string().min(1)).min(1)
+        tickers: Joi.array().items(Joi.string().min(1).max(256)).min(1).required(),
+        dateFrom: Joi.date().iso().required(),
+        dateTo: Joi.date().iso().required(),
 
     });
 
     return schema.validate(input);
 }
 
+function validateIndicatorFilterInput (input) {
+    const schema = Joi.object({
+        tickers: Joi.array().items(Joi.string().min(1).max(256)).min(1).required(),
+    });
+
+    return schema.validate(input);
+}
 
 module.exports.Filter = Filter
-module.exports.validateFilter = validateFilterInput
+module.exports.validateEvaluationFilter = validateEvaluationFilterInput
+module.exports.validateIndicatorFilter = validateIndicatorFilterInput

@@ -11,8 +11,9 @@ async function delay(ms) {
 const evaluationSchema = new mongoose.Schema({
     title: String, 
     evaluation: String,
-    containsYes: Boolean,
     url: String,
+    containsYes: Boolean,
+    containsNo: Boolean,
     date: Number,
     symbol: String,
 })
@@ -26,6 +27,7 @@ function validateEvaluationInput (input) {
         evaluation: Joi.string().min(10).required(),
         url: Joi.string().required(),
         containsYes: Joi.boolean().required(),
+        containsNo: Joi.boolean().required(),
         date: Joi.date().iso().required(),
         symbol: Joi.string().min(1).max(256).required()
     });
@@ -48,15 +50,18 @@ async function evaluateTicker (tickerRequest, ticker) {
                         evaluation: result,
                         url: news.articles[index].sourceUrl,
                         containsYes: result.includes('YES'),
+                        containsNo: result.includes('NO'),
                         date: Date.parse(news.articles[index].publishedAt),
                         symbol: news.articles[index].symbols[0]
                     })
-                    try{
-                        await tickerEvaluation.save()
-                    }catch(err){
-                        throw new Error(err)
+                    const compareObject = await Evaluation.find({url: news.articles[index].sourceUrl});
+                    if (compareObject.length === 0) {
+                        try{
+                            await tickerEvaluation.save()
+                        }catch(err){
+                            throw new Error(err)
+                        }
                     }
-                    
                     evaluationsArray.push(tickerEvaluation)
                 if (index < news.articles.length - 1) {await delay(20000)}
             }
