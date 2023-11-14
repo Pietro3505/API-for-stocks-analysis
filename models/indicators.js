@@ -36,8 +36,8 @@ function validateIndicatorInput (input) {
 async function tickerIndicator(ticker) {
 
     const indicators =  await searchIndicators(ticker);
-    const keyMetrics = indicators[0][0];
-    const ratios = indicators[1][0];
+        const keyMetrics = indicators[0][0];
+        const ratios = indicators[1][0];
         const companyIndicator = new Indicator({
             symbol: ratios.symbol,
             EPS: ratios.priceEarningsRatio,
