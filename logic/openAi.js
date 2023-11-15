@@ -4,7 +4,7 @@ const { sleep } = require("openai/core");
 //process.env.API_OPENAI_API_KEY
 
 const openai = new OpenAI({
-    apiKey: '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',
+    apiKey: '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',
 });
 
 
