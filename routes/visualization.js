@@ -1,7 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const mongoose = require('mongoose');
-const {Ticker} = require('../models/tickers');
 const {Indicator} = require('../models/indicators');
 const {Evaluation} = require('../models/evaluations');
 const {validateEvaluationFilter, validateIndicatorFilter } = require('../models/filters');
@@ -45,6 +43,11 @@ async function searchEvaluations (tickers, dateFrom, dateTo) {
         const evaluations = await Evaluation.find({"symbol":element, "date": {"$gte": dateFrom, "$lte": dateTo}}).exec()
         if (evaluations.length !== 0) {
             collection.push(evaluations)
+        } else {
+            collection.push({
+                symbol: element,
+                description: 'No Evaluations Found'
+            })
         }
     }
         return collection
@@ -57,6 +60,11 @@ async function searchIndicators (tickers) {
         const indicators = await Indicator.find({"symbol": element})
         if (indicators.length !== 0) {
             collection.push(indicators)
+        } else {
+            collection.push({
+                symbol: element,
+                description: 'No Indicators Found'
+            })
         }
     }
         return collection
