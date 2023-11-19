@@ -19,7 +19,10 @@ router.post('/', async (req, res) => {
     if (evaluations.length !== 0) {
         res.send(calculateGTPScore(evaluations));
     } else {
-        res.send("No evaluation Found")
+        res.send({
+            symbol: symbol,
+            description: 'No evaluation Found'
+        })
     }
 });
 
