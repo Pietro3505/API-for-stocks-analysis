@@ -23,7 +23,7 @@ async function searchKeyMetrics (individualTicker) {
     const options = {
         hostname: 'financialmodelingprep.com',
         port: 443,
-        path: `https://financialmodelingprep.com/api/v3/key-metrics/${individualTicker}?period=annual&apikey=0kHkERnKagO02ZDrjvySH3HnoybYheKv`,
+        path: `https://financialmodelingprep.com/api/v3/key-metrics/${individualTicker}?period=annual&apikey=`,
         method: 'GET'
     }
 
