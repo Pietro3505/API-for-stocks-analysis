@@ -1,6 +1,6 @@
 const {Ticker} = require('../models/tickers');
 const { SearchApi } = require('financial-news-api');
-const searchApi = SearchApi('8e7351bacd5a46a58edd7baab64a24c0692e03c9eb684eb7a00f649b492e1461');
+const searchApi = SearchApi('');
 const https =  require('https');
 
 
